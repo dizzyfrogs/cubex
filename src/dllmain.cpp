@@ -27,6 +27,35 @@ void console() {
             localPlayerPtr->pos.z -= 5;
         if (input == "print")
             cout << "Local Player Ptr: " << localPlayerPtr << endl;
+        if (input == "playercount")
+            cout << "Number of Players: " << numPlayers << endl;
+        if (input == "ent") {
+            uintptr_t listBasePtr = *(uintptr_t*)entityListBase;
+
+            if (listBasePtr == 0) {
+                cout << "Entity list base pointer is null!" << endl;
+                continue;
+            }
+
+            // start at offset 4
+            int offset = 4;
+            int entityIndex = 1;
+
+            while (entityIndex < numPlayers) {
+                Player* p = *(Player**)(listBasePtr + offset);
+
+                if (p == nullptr)
+                    break;  // no more entities
+
+                cout << "Entity " << entityIndex << " Pos: "
+                    << p->pos.x << " "
+                    << p->pos.y << " "
+                    << p->pos.z << " " << endl;
+
+                offset += 4;
+                entityIndex++;
+            }
+        }
     }
     FreeConsole();
 }
@@ -46,7 +75,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)console, nullptr, 0, nullptr);
         CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)hook, nullptr, 0, nullptr);
     case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
+    case DLL_THREAD_DETACH: 
     case DLL_PROCESS_DETACH:
         break;
     }
