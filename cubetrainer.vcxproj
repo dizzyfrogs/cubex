@@ -149,11 +149,15 @@
   <ItemGroup>
     <ClCompile Include="src\constants.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
+    <ClCompile Include="src\esp.cpp" />
     <ClCompile Include="src\genCode.cpp" />
+    <ClCompile Include="src\geom.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\constants.h" />
+    <ClInclude Include="src\esp.h" />
     <ClInclude Include="src\genCode.h" />
+    <ClInclude Include="src\geom.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

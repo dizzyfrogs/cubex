@@ -7,4 +7,12 @@ extern Player* localPlayerPtr = *(Player**)(exeBaseAddress + 0x0017E0A8);
 
 uintptr_t entityListBase = exeBaseAddress + 0x18AC04;
 
+extern float fov = *(float*)(exeBaseAddress + 0x18A7CC);
 extern int numPlayers = *(int*)(exeBaseAddress + 0x18AC0C);
+
+void resetPointers() {
+	localPlayerPtr = *(Player**)(exeBaseAddress + 0x0017E0A8);
+	entityListBase = exeBaseAddress + 0x18AC04;
+	fov = *(float*)(exeBaseAddress + 0x18A7CC);
+	numPlayers = *(int*)(exeBaseAddress + 0x18AC0C);
+}

@@ -3,11 +3,16 @@
 #include <iostream>
 #include "constants.h"
 #include "genCode.h"
+#include "esp.h"
 
 using namespace std;
 
 void hook() {
-
+    while (true) {
+        resetPointers();
+        ESP::aimbot();
+        Sleep(10);
+    }
 }
 
 void console() {
