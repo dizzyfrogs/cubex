@@ -16,3 +16,6 @@ void resetPointers() {
 	fov = *(float*)(exeBaseAddress + 0x18A7CC);
 	numPlayers = *(int*)(exeBaseAddress + 0x18AC0C);
 }
+
+_wglSwapBuffers originalSwapBuffers = (_wglSwapBuffers)GetProcAddress(GetModuleHandle(L"opengl32.dll"), "wglSwapBuffers");
+_SDL_SetRelativeMouseMode originalSetRelativeMouseMode = (_SDL_SetRelativeMouseMode)GetProcAddress(GetModuleHandle(L"SDL2.dll"), "SDL_SetRelativeMouseMode");

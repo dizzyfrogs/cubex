@@ -4,15 +4,28 @@
 #include "constants.h"
 #include "genCode.h"
 #include "esp.h"
+#include "detours/detours.h"
+#include "menu.h"
 
 using namespace std;
 
-void hook() {
+void aimbot() {
     while (true) {
         resetPointers();
         ESP::aimbot();
         Sleep(10);
+        if (GetAsyncKeyState(VK_INSERT))
+            Menu::toggleMenu();
     }
+}
+
+void hook() {
+    Sleep(1000);
+    DisableThreadLibraryCalls(hModule);
+    DetourTransactionBegin();
+    DetourUpdateThread(GetCurrentThread());
+    DetourAttach(&(PVOID&)originalSwapBuffers, Menu::newSwapBuffers);
+    DetourTransactionCommit();
 }
 
 void console() {
@@ -79,6 +92,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_PROCESS_ATTACH:
         CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)console, nullptr, 0, nullptr);
         CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)hook, nullptr, 0, nullptr);
+        CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)aimbot, nullptr, 0, nullptr);
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH: 
     case DLL_PROCESS_DETACH:
