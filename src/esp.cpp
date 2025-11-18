@@ -6,10 +6,14 @@
 #include "settings.h"
 #include "imgui/imgui.h"
 #include <ctime>
+#include <random>
+#include "libs/perlin.h"
 
 float curAimTime = 0;
 clock_t lastAimTime = clock();
 Player* curTarget = nullptr;
+static siv::PerlinNoise perlinNoise(std::mt19937{ std::random_device{}() });
+static float noiseTime = 0.0f;
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
@@ -165,6 +169,22 @@ void ESP::aimbot() {
     else {
         currentAngle = targetAngle;
     }
+    
+    if (Settings::Aimbot::randomizationEnabled) {
+        static clock_t lastNoiseTime = clock();
+        float deltaTime = static_cast<float>(now - lastNoiseTime) / CLOCKS_PER_SEC;
+        lastNoiseTime = now;
+        noiseTime += deltaTime * Settings::Aimbot::randomizationSpeed;
+        
+        double noiseYaw = perlinNoise.noise1D(noiseTime);
+        double noisePitch = perlinNoise.noise1D(noiseTime + 1000.0); // offset by 1000 to get different noise
+        
+        currentAngle.x += static_cast<float>(noiseYaw) * Settings::Aimbot::randomizationIntensityYaw;
+        currentAngle.y += static_cast<float>(noisePitch) * Settings::Aimbot::randomizationIntensityPitch;
+        
+        normalizeAngle(currentAngle);
+    }
+    
     localPlayerPtr->yaw = currentAngle.x;
     localPlayerPtr->pitch = currentAngle.y;
 }

@@ -175,15 +175,6 @@ void aimSettings() {
 	if (!ImGui::BeginTabItem("Aim"))
 		return;
 	ImGui::Checkbox("Enabled", &Settings::Aimbot::enabled);
-	ImGui::Checkbox("Smoothing", &Settings::Aimbot::smoothing);
-	ImGui::SliderFloat("Smoothing Amount", &Settings::Aimbot::smoothingAmount, 0.1f, 10.0f);
-	ImGui::Checkbox("Check FOV", &Settings::Aimbot::checkInFov);
-	ImGui::SliderFloat("FOV", &Settings::Aimbot::fov, 0.0f, 500.0f);
-	ImGui::Checkbox("Draw FOV Circle", &Settings::Aimbot::drawFovCircle);
-	
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
 	
 	std::string buttonText = "AIM Key: " + getKeyName(Settings::Aimbot::aimKey);
 	if (Settings::Aimbot::waitingForKeyBind) {
@@ -204,6 +195,38 @@ void aimSettings() {
 		if (ImGui::Button("Cancel")) {
 			Settings::Aimbot::waitingForKeyBind = false;
 		}
+	}
+	
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	ImGui::Checkbox("Check FOV", &Settings::Aimbot::checkInFov);
+	if (Settings::Aimbot::checkInFov) {
+		ImGui::Indent();
+		ImGui::SliderFloat("FOV", &Settings::Aimbot::fov, 0.0f, 500.0f);
+		ImGui::Checkbox("Draw FOV Circle", &Settings::Aimbot::drawFovCircle);
+		ImGui::Unindent();
+	}
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	ImGui::Checkbox("Smoothing", &Settings::Aimbot::smoothing);
+	if (Settings::Aimbot::smoothing) {
+		ImGui::Indent();
+		ImGui::SliderFloat("Smoothing Amount", &Settings::Aimbot::smoothingAmount, 0.1f, 10.0f);
+		ImGui::Unindent();
+	}
+	
+	ImGui::Checkbox("Randomization", &Settings::Aimbot::randomizationEnabled);
+	if (Settings::Aimbot::randomizationEnabled) {
+		ImGui::Indent();
+		ImGui::SliderFloat("Yaw Intensity", &Settings::Aimbot::randomizationIntensityYaw, 0.0f, 1.0f);
+		ImGui::SliderFloat("Pitch Intensity", &Settings::Aimbot::randomizationIntensityPitch, 0.0f, 1.0f);
+		ImGui::SliderFloat("Speed", &Settings::Aimbot::randomizationSpeed, 0.0f, 5.0f);
+		ImGui::Unindent();
 	}
 	
 	ImGui::EndTabItem();

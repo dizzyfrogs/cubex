@@ -20,5 +20,9 @@ namespace Settings {
 		extern bool drawFovCircle = true;
 		extern int aimKey = VK_SHIFT;
 		extern bool waitingForKeyBind = false;
+		extern bool randomizationEnabled = false;
+		extern float randomizationIntensityYaw = 0.5f;
+		extern float randomizationIntensityPitch = 0.5f;
+		extern float randomizationSpeed = 2.5f;
 	}
 }
