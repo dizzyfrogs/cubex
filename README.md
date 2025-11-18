@@ -18,7 +18,7 @@
 4. The DLL will be in the `build/` folder
 
 ## Usage
-1. Inject `cubex.dll into AssaultCube
+1. Inject `cubex.dll` into AssaultCube
 2. Press `INSERT` to open the menu
 3. Configure your settings
 
