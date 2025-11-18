@@ -58,7 +58,7 @@ bool isInFOVW2S(Vec3& screenLoc) {
 }
 
 bool isValidTarget(Player* target) {
-    return target && target->health <= 100 && target->health > 0 && isInFOV(localPlayerPtr, target->headpos);
+    return target && localPlayerPtr && target->health <= 100 && target->health > 0 && isInFOV(localPlayerPtr, target->headpos);
 }
 
 void smoothAngle(Vec3& from, Vec3& to, float percent) {
@@ -77,10 +77,16 @@ void smoothAngle(Vec3& from, Vec3& to, float percent) {
 }
 
 Player* ESP::getNearestEntityW2S() {
+    if (!localPlayerPtr || !entityListBase || numPlayers <= 0)
+        return nullptr;
+        
     Player* nearestPlayer = nullptr;
     float nearestDistance = 9999999.0f;
     float distance = 0;
     uintptr_t listBasePtr = *(uintptr_t*)entityListBase;
+    
+    if (!listBasePtr)
+        return nullptr;
 
     int offset = 4;
     int entityIndex = 1;
@@ -88,7 +94,7 @@ Player* ESP::getNearestEntityW2S() {
     while (entityIndex < numPlayers) {
         Player* player = *(Player**)(listBasePtr + offset);
 
-        if (player->health <= 0 || player->health > 100 || player->team == localPlayerPtr->team) {
+        if (!player || player->health <= 0 || player->health > 100 || player->team == localPlayerPtr->team) {
             offset += 4;
             entityIndex++;
             continue;
@@ -118,6 +124,9 @@ Player* ESP::getNearestEntityW2S() {
 }
 
 void ESP::aimbot() {
+    if (!localPlayerPtr)
+        return;
+        
     if (Settings::Aimbot::drawFovCircle)
         ImGui::GetBackgroundDrawList()->AddCircle(ImVec2(getCenterScreenPos().x, getCenterScreenPos().y), Settings::Aimbot::fov, IM_COL32(255, 255, 255, 255 / 2), 50);
     if (!Settings::Aimbot::enabled || !GetAsyncKeyState(VK_SHIFT)) {
@@ -203,14 +212,27 @@ void ESP::drawESP() {
     if (!Settings::ESP::enabled)
         return;
 
+    if (!localPlayerPtr || !entityListBase || numPlayers <= 0)
+        return;
+
     bool teammate = false;
     uintptr_t listBasePtr = *(uintptr_t*)entityListBase;
+    
+    if (!listBasePtr)
+        return;
 
     int offset = 4;
     int entityIndex = 1;
 
     while (entityIndex < numPlayers) {
         Player* player = *(Player**)(listBasePtr + offset);
+        
+        if (!player) {
+            offset += 4;
+            entityIndex++;
+            continue;
+        }
+        
         teammate = player->team == localPlayerPtr->team;
         if (player->health > 100 || player->health <= 0 || (teammate && !Settings::ESP::drawTeam)) {
             offset += 4;
