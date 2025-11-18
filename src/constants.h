@@ -8,7 +8,10 @@ extern uintptr_t exeBaseAddress;
 extern Player* localPlayerPtr;
 extern uintptr_t entityListBase;
 extern float fov;
+extern int* screenWidthPtr;
+extern int* screenHeightPtr;
 extern int numPlayers;
+extern float* viewMatrix;
 
 void resetPointers();
 

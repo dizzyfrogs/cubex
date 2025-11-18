@@ -39,6 +39,9 @@
     <ClInclude Include="src\imgui\imgui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\constants.cpp">
@@ -65,19 +68,7 @@
     <ClCompile Include="src\imgui\imgui_impl_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\imgui\imgui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui\imgui_demo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui\imgui_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui\imgui_tables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui\imgui_widgets.cpp">
+    <ClCompile Include="src\settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

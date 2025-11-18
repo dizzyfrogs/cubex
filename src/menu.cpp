@@ -1,5 +1,7 @@
 #include "menu.h"
 #include "constants.h"
+#include "settings.h"
+#include "esp.h"
 #include "GL/GL.h"
 #include "GL/GLU.h"
 #pragma comment(lib, "opengl32.lib")
@@ -95,21 +97,41 @@ void Menu::startRender()
 	ImGui::NewFrame();
 }
 
+void testingSettings() {
+	if (!ImGui::BeginTabItem("Testing"))
+		return;
+	ImGui::Text("Hello, World!");
+	if (ImGui::Button("TP up")) {
+		if (localPlayerPtr) {
+			localPlayerPtr->pos.z += 5;
+		}
+	}
+	ImGui::EndTabItem();
+}
+
+void espSettings() {
+	if (!ImGui::BeginTabItem("ESP"))
+		return;
+	ImGui::Checkbox("Enabled", &Settings::ESP::enabled);
+	ImGui::Checkbox("Draw Team", &Settings::ESP::drawTeam);
+	ImGui::ColorEdit4("Team Color", (float*)&Settings::ESP::teamColor->Value);
+	ImGui::ColorEdit4("Enemy Color", (float*)&Settings::ESP::enemyColor->Value);
+	ImGui::EndTabItem();
+}
+
 void Menu::render()
 {
 	if (!showMenu)
 		return;
 
 	ImGui::Begin("Menu", &showMenu);
-	ImGui::Text("Hello, World!");
-	if (originalSetRelativeMouseMode) {
-		originalSetRelativeMouseMode(!showMenu);
+	if (ImGui::BeginTabBar("Tabs")) {
+		espSettings();
+		testingSettings();
+		ImGui::EndTabBar();
 	}
-	if (ImGui::Button("TP up")) {
-		if (localPlayerPtr) {
-			localPlayerPtr->pos.z += 5;
-		}
-	}
+	
+	originalSetRelativeMouseMode(!showMenu);
 	ImGui::End();
 }
 
@@ -150,6 +172,7 @@ BOOL __stdcall Menu::newSwapBuffers(HDC hdc)
 		wglMakeCurrent(hdc, myContext);
 		Menu::startRender();
 		Menu::render();
+		ESP::drawESP();
 		Menu::endRender();
 	}
 	

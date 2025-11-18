@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <iostream>
 #include "geom.h"
+#include "settings.h"
+#include "imgui/imgui.h"
 
 void normalizeAngle(Vec3& angle) {
     while (angle.x >= 360.0f)
@@ -118,4 +120,98 @@ void ESP::aimbot() {
     angle.x += 90;
     localPlayerPtr->yaw = angle.x;
     localPlayerPtr->pitch = angle.y;
+}
+
+void drawCenteredText(std::string text, float x, float y) {
+    float textWidth = ImGui::CalcTextSize(text.c_str()).x;
+    ImGui::GetBackgroundDrawList()->AddText(ImVec2(x - textWidth / 2, y), IM_COL32(255, 255, 255, 255), text.c_str());
+}
+
+ImColor getHealthColor(float health, float maxHealth) {
+    float healthPercent = health / maxHealth;
+    
+    if (healthPercent > 0.5f) {
+        float t = (healthPercent - 0.5f) / 0.5f;
+        int r = (int)(255 * (1.0f - t));
+        int g = 255;
+        int b = 0;
+        return ImColor(r, g, b, 255);
+    } else {
+        float t = healthPercent / 0.5f;
+        int r = 255;
+        int g = (int)(255 * t);
+        int b = 0;
+        return ImColor(r, g, b, 255);
+    }
+}
+
+void drawHealthBar(float centerX, float boxWidth, float headY, float feetY, float health) {
+    float barWidth = 3.0f;
+    float barOffset = 5.0f;
+    float barLeftX = centerX - boxWidth - barOffset - barWidth;
+    float barRightX = centerX - boxWidth - barOffset;
+    
+    ImGui::GetBackgroundDrawList()->AddRect(ImVec2(barLeftX, headY), ImVec2(barRightX, feetY), IM_COL32(1, 1, 1, 255), 0, 0, 1.0f);
+    
+    float healthPercent = health / 100.0f;
+    float filledHeight = (feetY - headY) * healthPercent;
+    float filledTopY = feetY - filledHeight;
+    
+    ImColor healthColor = getHealthColor(health, 100.0f);
+    ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(barLeftX, filledTopY), ImVec2(barRightX, feetY), healthColor);
+}
+
+void ESP::drawESP() {
+    if (!Settings::ESP::enabled)
+        return;
+
+    bool teammate = false;
+    uintptr_t listBasePtr = *(uintptr_t*)entityListBase;
+
+    int offset = 4;
+    int entityIndex = 1;
+
+    while (entityIndex < numPlayers) {
+        Player* player = *(Player**)(listBasePtr + offset);
+        teammate = player->team == localPlayerPtr->team;
+        if (player->health > 100 || player->health <= 0 || (teammate && !Settings::ESP::drawTeam)) {
+            offset += 4;
+            entityIndex++;
+            continue;
+        }
+            
+        Vec3 headpos = { player->headpos.x, player->headpos.y, player->headpos.z + 0.75f };
+        Vec3 feetpos = { player->pos.x, player->pos.y, player->pos.z };
+
+        Vec3 headScreenPos = OpenGLWorldToScreen(headpos, viewMatrix, *screenWidthPtr, *screenHeightPtr);
+        Vec3 feetScreenPos = OpenGLWorldToScreen(feetpos, viewMatrix, *screenWidthPtr, *screenHeightPtr);
+
+        bool headOutOfBounds = headScreenPos.x < -100 || headScreenPos.x > *screenWidthPtr + 100 || headScreenPos.y < -100 || headScreenPos.y > *screenHeightPtr + 100 ||
+                               (headScreenPos.x == 0 && headScreenPos.y == 0 && headScreenPos.z == 0);
+        bool feetOutOfBounds = feetScreenPos.x < -100 || feetScreenPos.x > *screenWidthPtr + 100 || feetScreenPos.y < -100 || feetScreenPos.y > *screenHeightPtr + 100 ||
+                               (feetScreenPos.x == 0 && feetScreenPos.y == 0 && feetScreenPos.z == 0);
+
+        if (headOutOfBounds && feetOutOfBounds) {
+            offset += 4;
+            entityIndex++;
+            continue;
+        }
+
+        float height = abs(headScreenPos.y - feetScreenPos.y);
+        float width = height / 4;
+        float centerX = (headScreenPos.x + feetScreenPos.x) / 2.0f;
+
+        ImVec2 topLeft = ImVec2(centerX - width, headScreenPos.y);
+        ImVec2 topRight = ImVec2(centerX + width, headScreenPos.y);
+        ImVec2 bottomLeft = ImVec2(centerX - width, feetScreenPos.y);
+        ImVec2 bottomRight = ImVec2(centerX + width, feetScreenPos.y);
+
+        ImColor espColor = teammate ? *Settings::ESP::teamColor : *Settings::ESP::enemyColor;
+        ImGui::GetBackgroundDrawList()->AddQuad(topLeft, topRight, bottomRight, bottomLeft, espColor, 1.0f);
+        drawCenteredText(player->name, centerX, feetScreenPos.y + 5);
+        drawHealthBar(centerX, width, headScreenPos.y, feetScreenPos.y, player->health);
+
+        offset += 4;
+        entityIndex++;
+    }
 }
