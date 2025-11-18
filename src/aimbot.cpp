@@ -35,7 +35,7 @@ Player* Aimbot::getNearestEntityW2S() {
     while (entityIndex < numPlayers) {
         Player* player = *(Player**)(listBasePtr + offset);
 
-        if (!player || player->health <= 0 || player->health > 100 || player->team == localPlayerPtr->team) {
+        if (!player || player->health <= 0 || player->health > 100 || !Utils::PlayerUtils::isEnemy(player)) {
             offset += 4;
             entityIndex++;
             continue;

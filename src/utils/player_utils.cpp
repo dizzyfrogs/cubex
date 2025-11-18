@@ -27,3 +27,20 @@ bool Utils::PlayerUtils::isValidTarget(Player* target) {
 	return target && localPlayerPtr && target->health <= 100 && target->health > 0 && Utils::PlayerUtils::isInFOV(localPlayerPtr, target->headpos);
 }
 
+bool Utils::PlayerUtils::isTeamGameMode(int mode) {
+	// team game modes: 0, 4, 5, 7, 11, 13, 14, 16, 17
+	return mode == 0 || mode == 4 || mode == 5 || mode == 7 || mode == 11 || 
+	       mode == 13 || mode == 14 || mode == 16 || mode == 17;
+}
+
+bool Utils::PlayerUtils::isEnemy(Player* player) {
+	if (!player || !localPlayerPtr)
+		return false;
+	
+	if (!isTeamGameMode(gameMode)) {
+		return true;
+	}
+	
+	return player->team != localPlayerPtr->team;
+}
+

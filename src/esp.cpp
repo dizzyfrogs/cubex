@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "imgui/imgui.h"
 #include "utils/render_utils.h"
+#include "utils/player_utils.h"
 
 void ESP::drawESP() {
     if (!Settings::ESP::enabled)
@@ -32,7 +33,7 @@ void ESP::drawESP() {
             continue;
         }
         
-        teammate = player->team == localPlayerPtr->team;
+        teammate = !Utils::PlayerUtils::isEnemy(player);
         if (player->health > 100 || player->health <= 0 || (teammate && !Settings::ESP::drawTeam)) {
             offset += 4;
             entityIndex++;

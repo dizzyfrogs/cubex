@@ -10,6 +10,7 @@ extern uintptr_t entityListBase;
 extern float fov;
 extern int* screenWidthPtr;
 extern int* screenHeightPtr;
+extern int gameMode;
 extern int numPlayers;
 extern float* viewMatrix;
 
