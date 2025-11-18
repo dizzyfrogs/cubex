@@ -10,13 +10,7 @@
 using namespace std;
 
 void aimbot() {
-    while (true) {
-        resetPointers();
-        ESP::aimbot();
-        Sleep(10);
-        if (GetAsyncKeyState(VK_INSERT))
-            Menu::toggleMenu();
-    }
+
 }
 
 void hook() {
@@ -26,6 +20,12 @@ void hook() {
     DetourUpdateThread(GetCurrentThread());
     DetourAttach(&(PVOID&)originalSwapBuffers, Menu::newSwapBuffers);
     DetourTransactionCommit();
+    while (true) {
+        resetPointers();
+        Sleep(300);
+        if (GetAsyncKeyState(VK_INSERT))
+            Menu::toggleMenu();
+    }
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,

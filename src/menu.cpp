@@ -119,6 +119,18 @@ void espSettings() {
 	ImGui::EndTabItem();
 }
 
+void aimSettings() {
+	if (!ImGui::BeginTabItem("Aim"))
+		return;
+	ImGui::Checkbox("Enabled", &Settings::Aimbot::enabled);
+	ImGui::Checkbox("Smoothing", &Settings::Aimbot::smoothing);
+	ImGui::SliderFloat("Smoothing Amount", &Settings::Aimbot::smoothingAmount, 0.1f, 10.0f);
+	ImGui::Checkbox("Check FOV", &Settings::Aimbot::checkInFov);
+	ImGui::SliderFloat("FOV", &Settings::Aimbot::fov, 0.0f, 500.0f);
+	ImGui::Checkbox("Draw FOV Circle", &Settings::Aimbot::drawFovCircle);
+	ImGui::EndTabItem();
+}
+
 void Menu::render()
 {
 	if (!showMenu)
@@ -127,6 +139,7 @@ void Menu::render()
 	ImGui::Begin("Menu", &showMenu);
 	if (ImGui::BeginTabBar("Tabs")) {
 		espSettings();
+		aimSettings();
 		testingSettings();
 		ImGui::EndTabBar();
 	}
@@ -173,6 +186,7 @@ BOOL __stdcall Menu::newSwapBuffers(HDC hdc)
 		Menu::startRender();
 		Menu::render();
 		ESP::drawESP();
+		ESP::aimbot();
 		Menu::endRender();
 	}
 	

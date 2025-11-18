@@ -5,6 +5,18 @@
 #include "geom.h"
 #include "settings.h"
 #include "imgui/imgui.h"
+#include <ctime>
+
+float curAimTime = 0;
+clock_t lastAimTime = clock();
+Player* curTarget = nullptr;
+
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
+Vec3 getCenterScreenPos() {
+    Vec3 centerScreenPos = { (float)*screenWidthPtr / 2.0f, (float)*screenHeightPtr / 2.0f, 0.0f };
+    return centerScreenPos;
+}
 
 void normalizeAngle(Vec3& angle) {
     while (angle.x >= 360.0f)
@@ -41,13 +53,33 @@ bool isInFOV(Player* owner, Vec3 looking) {
     return (yawDiff < fov / 2.0f && pitchDiff < fov / 2.0f);
 }
 
+bool isInFOVW2S(Vec3& screenLoc) {
+    return abs(getCenterScreenPos().Distance(screenLoc)) < Settings::Aimbot::fov;
+}
+
 bool isValidTarget(Player* target) {
     return target && target->health <= 100 && target->health > 0 && isInFOV(localPlayerPtr, target->headpos);
 }
 
-Player* ESP::getNearestPlayer() {
-	Player* nearestPlayer = nullptr;
-	float nearestDistance = 9999999.0f;
+void smoothAngle(Vec3& from, Vec3& to, float percent) {
+    normalizeAngle(from);
+    normalizeAngle(to);
+
+    float yawDiff = to.x - from.x;
+    if (yawDiff > 180.0f) yawDiff -= 360.0f;
+    if (yawDiff < -180.0f) yawDiff += 360.0f;
+
+    float pitchDiff = to.y - from.y;
+
+    from.x += yawDiff * percent;
+    from.y += pitchDiff * percent;
+    normalizeAngle(from);
+}
+
+Player* ESP::getNearestEntityW2S() {
+    Player* nearestPlayer = nullptr;
+    float nearestDistance = 9999999.0f;
+    float distance = 0;
     uintptr_t listBasePtr = *(uintptr_t*)entityListBase;
 
     int offset = 4;
@@ -56,13 +88,24 @@ Player* ESP::getNearestPlayer() {
     while (entityIndex < numPlayers) {
         Player* player = *(Player**)(listBasePtr + offset);
 
-        if (!isValidTarget(player)) {
+        if (player->health <= 0 || player->health > 100 || player->team == localPlayerPtr->team) {
             offset += 4;
             entityIndex++;
             continue;
         }
 
-        float distance = localPlayerPtr->pos.Distance(player->pos);
+        Vec3 headpos = player->headpos;
+        Vec3 headScreenPos = OpenGLWorldToScreen(headpos, viewMatrix, *screenWidthPtr, *screenHeightPtr);
+
+        if (headScreenPos.z < 0 || (Settings::Aimbot::checkInFov && !isInFOVW2S(headScreenPos))) {
+            offset += 4;
+            entityIndex++;
+            continue;
+        }
+
+        headScreenPos.z = 0;
+        distance = abs(getCenterScreenPos().Distance(headScreenPos));
+
         if (distance < nearestDistance) {
             nearestDistance = distance;
             nearestPlayer = player;
@@ -74,52 +117,47 @@ Player* ESP::getNearestPlayer() {
     return nearestPlayer;
 }
 
-Player* ESP::getNearestEntityAngle() {
-    Vec3 playerAngle(localPlayerPtr->yaw + 180, localPlayerPtr->pitch, 0);
-    normalizeAngle(playerAngle);
-    Player* nearestPlayer = nullptr;
-    float smallestAngle = 9999999.0f;
-    uintptr_t listBasePtr = *(uintptr_t*)entityListBase;
-
-    int offset = 4;
-    int entityIndex = 1;
-
-    while (entityIndex < numPlayers) {
-        Player* player = *(Player**)(listBasePtr + offset);
-
-        if (!isValidTarget(player)) {
-            offset += 4;
-            entityIndex++;
-            continue;
-        }
-
-        Vec3 targetAngle = CalcAngle(localPlayerPtr->pos, player->pos);
-        Vec3 angleDiff = playerAngle - targetAngle;
-        normalizeAngle(angleDiff);
-        float angleMagnitude = angleDiff.Length();
-
-        if (angleMagnitude < smallestAngle) {
-            smallestAngle = angleMagnitude;
-            nearestPlayer = player;
-        }
-
-        offset += 4;
-        entityIndex++;
-    }
-    return nearestPlayer;
-}
-
 void ESP::aimbot() {
-    if (!GetAsyncKeyState(VK_SHIFT))
+    if (Settings::Aimbot::drawFovCircle)
+        ImGui::GetBackgroundDrawList()->AddCircle(ImVec2(getCenterScreenPos().x, getCenterScreenPos().y), Settings::Aimbot::fov, IM_COL32(255, 255, 255, 255 / 2), 50);
+    if (!Settings::Aimbot::enabled || !GetAsyncKeyState(VK_SHIFT)) {
+        curAimTime = 0;
+        lastAimTime = clock();
+        curTarget = nullptr;
         return;
-    Player* target = getNearestEntityAngle();
+    }
+    Player* target = getNearestEntityW2S();
     if (!target)
         return;
 
-    Vec3 angle = CalcAngle(localPlayerPtr->headpos, target->headpos);
-    angle.x += 90;
-    localPlayerPtr->yaw = angle.x;
-    localPlayerPtr->pitch = angle.y;
+    if (target != curTarget) {
+        curAimTime = 0;
+        lastAimTime = clock();
+        curTarget = target;
+    }
+
+    clock_t now = clock();
+    curAimTime += static_cast<float>(now - lastAimTime) / CLOCKS_PER_SEC;
+    lastAimTime = now;
+    float percent = min(curAimTime / Settings::Aimbot::smoothingAmount, 1.0);
+
+    Vec3 targetAngle = CalcAngle(localPlayerPtr->headpos, target->headpos);
+    targetAngle.x += 90;
+
+    Vec3 currentAngle = { localPlayerPtr->yaw, localPlayerPtr->pitch, 0 };
+    
+    if (Settings::Aimbot::smoothing) {
+        if (percent >= 1) {
+            curAimTime = 0;
+            percent = 1;
+        }
+        smoothAngle(currentAngle, targetAngle, percent);
+    }
+    else {
+        currentAngle = targetAngle;
+    }
+    localPlayerPtr->yaw = currentAngle.x;
+    localPlayerPtr->pitch = currentAngle.y;
 }
 
 void drawCenteredText(std::string text, float x, float y) {

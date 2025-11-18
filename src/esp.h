@@ -3,7 +3,7 @@
 
 namespace ESP {
 	Player* getNearestPlayer();
-	Player* getNearestEntityAngle();
+	Player* getNearestEntityW2S();
 	void aimbot();
 	void drawESP();
 }

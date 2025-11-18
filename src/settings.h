@@ -10,6 +10,11 @@ namespace Settings {
 		extern ImColor* enemyColor;
 	}
 	namespace Aimbot {
-
+		extern bool enabled;
+		extern bool smoothing;
+		extern float smoothingAmount;
+		extern bool checkInFov;
+		extern float fov;
+		extern bool drawFovCircle;
 	}
 }
