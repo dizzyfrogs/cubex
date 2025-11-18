@@ -108,7 +108,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\libs\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\libs\;$(SolutionDir)src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,17 +154,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\aimbot.cpp" />
     <ClCompile Include="src\constants.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\esp.cpp" />
-    <ClCompile Include="src\genCode.cpp" />
     <ClCompile Include="src\libs\geom.cpp" />
     <ClCompile Include="src\libs\imgui\imgui_impl_opengl2.cpp" />
     <ClCompile Include="src\libs\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="src\menu.cpp" />
     <ClCompile Include="src\settings.cpp" />
+    <ClCompile Include="src\utils\input_utils.cpp" />
+    <ClCompile Include="src\utils\math_utils.cpp" />
+    <ClCompile Include="src\utils\player_utils.cpp" />
+    <ClCompile Include="src\utils\render_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\aimbot.h" />
     <ClInclude Include="src\constants.h" />
     <ClInclude Include="src\esp.h" />
     <ClInclude Include="src\genCode.h" />
@@ -175,6 +180,10 @@
     <ClInclude Include="src\libs\perlin.h" />
     <ClInclude Include="src\menu.h" />
     <ClInclude Include="src\settings.h" />
+    <ClInclude Include="src\utils\input_utils.h" />
+    <ClInclude Include="src\utils\math_utils.h" />
+    <ClInclude Include="src\utils\player_utils.h" />
+    <ClInclude Include="src\utils\render_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json" />

@@ -9,10 +9,6 @@
 
 using namespace std;
 
-void aimbot() {
-
-}
-
 void hook() {
     Sleep(1000);
     DisableThreadLibraryCalls(hModule);
@@ -37,7 +33,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
         CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)hook, nullptr, 0, nullptr);
-        CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)aimbot, nullptr, 0, nullptr);
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH: 
     case DLL_PROCESS_DETACH:
