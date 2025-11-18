@@ -1,5 +1,6 @@
 #include "settings.h"
 #include "imgui/imgui.h"
+#include <Windows.h>
 
 class ImColor;
 
@@ -17,5 +18,7 @@ namespace Settings {
 		extern bool checkInFov = true;
 		extern float fov = 180;
 		extern bool drawFovCircle = true;
+		extern int aimKey = VK_SHIFT;
+		extern bool waitingForKeyBind = false;
 	}
 }

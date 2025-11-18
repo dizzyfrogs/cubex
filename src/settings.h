@@ -16,5 +16,7 @@ namespace Settings {
 		extern bool checkInFov;
 		extern float fov;
 		extern bool drawFovCircle;
+		extern int aimKey;
+		extern bool waitingForKeyBind;
 	}
 }

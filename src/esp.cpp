@@ -129,7 +129,7 @@ void ESP::aimbot() {
         
     if (Settings::Aimbot::drawFovCircle)
         ImGui::GetBackgroundDrawList()->AddCircle(ImVec2(getCenterScreenPos().x, getCenterScreenPos().y), Settings::Aimbot::fov, IM_COL32(255, 255, 255, 255 / 2), 50);
-    if (!Settings::Aimbot::enabled || !GetAsyncKeyState(VK_SHIFT)) {
+    if (!Settings::Aimbot::enabled || !GetAsyncKeyState(Settings::Aimbot::aimKey)) {
         curAimTime = 0;
         lastAimTime = clock();
         curTarget = nullptr;
