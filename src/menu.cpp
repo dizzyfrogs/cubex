@@ -117,6 +117,7 @@ void espSettings() {
 		return;
 	ImGui::Checkbox("Enabled", &Settings::ESP::enabled);
 	ImGui::Checkbox("Draw Team", &Settings::ESP::drawTeam);
+	ImGui::Checkbox("Tracelines", &Settings::ESP::drawTracelines);
 	ImGui::ColorEdit4("Team Color", (float*)&Settings::ESP::teamColor->Value);
 	ImGui::ColorEdit4("Enemy Color", (float*)&Settings::ESP::enemyColor->Value);
 	ImGui::EndTabItem();

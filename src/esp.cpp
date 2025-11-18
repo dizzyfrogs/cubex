@@ -45,6 +45,33 @@ void ESP::drawESP() {
         Vec3 headScreenPos = OpenGLWorldToScreen(headpos, viewMatrix, *screenWidthPtr, *screenHeightPtr);
         Vec3 feetScreenPos = OpenGLWorldToScreen(feetpos, viewMatrix, *screenWidthPtr, *screenHeightPtr);
 
+        ImColor espColor = teammate ? *Settings::ESP::teamColor : *Settings::ESP::enemyColor;
+        
+        if (Settings::ESP::drawTracelines) {
+            bool isValidPosition = !(feetScreenPos.x == 0 && feetScreenPos.y == 0 && feetScreenPos.z == 0);
+            
+            if (isValidPosition) {
+                float bottomCenterX = *screenWidthPtr / 2.0f;
+                float bottomCenterY = *screenHeightPtr;
+                
+                // clamp endpoint to screen bounds if off screen
+                float endX = feetScreenPos.x;
+                float endY = feetScreenPos.y;
+                
+                if (endX < 0) endX = 0;
+                else if (endX > *screenWidthPtr) endX = *screenWidthPtr;
+                if (endY < 0) endY = 0;
+                else if (endY > *screenHeightPtr) endY = *screenHeightPtr;
+                
+                ImGui::GetBackgroundDrawList()->AddLine(
+                    ImVec2(bottomCenterX, bottomCenterY),
+                    ImVec2(endX, endY),
+                    espColor,
+                    1.0f
+                );
+            }
+        }
+
         bool headOutOfBounds = headScreenPos.x < -100 || headScreenPos.x > *screenWidthPtr + 100 || headScreenPos.y < -100 || headScreenPos.y > *screenHeightPtr + 100 ||
                                (headScreenPos.x == 0 && headScreenPos.y == 0 && headScreenPos.z == 0);
         bool feetOutOfBounds = feetScreenPos.x < -100 || feetScreenPos.x > *screenWidthPtr + 100 || feetScreenPos.y < -100 || feetScreenPos.y > *screenHeightPtr + 100 ||
@@ -65,7 +92,6 @@ void ESP::drawESP() {
         ImVec2 bottomLeft = ImVec2(centerX - width, feetScreenPos.y);
         ImVec2 bottomRight = ImVec2(centerX + width, feetScreenPos.y);
 
-        ImColor espColor = teammate ? *Settings::ESP::teamColor : *Settings::ESP::enemyColor;
         ImGui::GetBackgroundDrawList()->AddQuad(topLeft, topRight, bottomRight, bottomLeft, espColor, 1.0f);
         Utils::Render::drawCenteredText(player->name, centerX, feetScreenPos.y + 5);
         Utils::Render::drawHealthBar(centerX, width, headScreenPos.y, feetScreenPos.y, player->health);

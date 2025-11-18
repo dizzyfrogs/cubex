@@ -6,6 +6,7 @@ namespace Settings {
 	namespace ESP {
 		extern bool enabled;
 		extern bool drawTeam;
+		extern bool drawTracelines;
 		extern ImColor* teamColor;
 		extern ImColor* enemyColor;
 	}
