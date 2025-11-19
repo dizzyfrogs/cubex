@@ -100,35 +100,11 @@ void Menu::startRender()
 	ImGui::NewFrame();
 }
 
-void testingSettings() {
-	if (!ImGui::BeginTabItem("Testing"))
-		return;
-	ImGui::Text("Hello, World!");
-	if (ImGui::Button("TP up")) {
-		if (localPlayerPtr) {
-			localPlayerPtr->pos.z += 5;
-		}
-	}
-	ImGui::EndTabItem();
-}
-
-void espSettings() {
-	if (!ImGui::BeginTabItem("ESP"))
-		return;
-	ImGui::Checkbox("Enabled", &Settings::ESP::enabled);
-	ImGui::Checkbox("Draw Team", &Settings::ESP::drawTeam);
-	ImGui::Checkbox("Tracelines", &Settings::ESP::drawTracelines);
-	ImGui::ColorEdit4("Team Color", (float*)&Settings::ESP::teamColor->Value);
-	ImGui::ColorEdit4("Enemy Color", (float*)&Settings::ESP::enemyColor->Value);
-	ImGui::EndTabItem();
-}
-
-
 void aimSettings() {
-	if (!ImGui::BeginTabItem("Aim"))
+	if (!ImGui::BeginTabItem("Aimbot"))
 		return;
 	ImGui::Checkbox("Enabled", &Settings::Aimbot::enabled);
-	
+
 	std::string buttonText = "AIM Key: " + Utils::Input::getKeyName(Settings::Aimbot::aimKey);
 	if (Settings::Aimbot::waitingForKeyBind) {
 		buttonText = "Press any key...";
@@ -138,18 +114,18 @@ void aimSettings() {
 			Settings::Aimbot::waitingForKeyBind = false;
 		}
 	}
-	
+
 	if (ImGui::Button(buttonText.c_str(), ImVec2(200, 0))) {
 		Settings::Aimbot::waitingForKeyBind = true;
 	}
-	
+
 	if (Settings::Aimbot::waitingForKeyBind) {
 		ImGui::SameLine();
 		if (ImGui::Button("Cancel")) {
 			Settings::Aimbot::waitingForKeyBind = false;
 		}
 	}
-	
+
 	ImGui::Spacing();
 	ImGui::Separator();
 	ImGui::Spacing();
@@ -163,7 +139,7 @@ void aimSettings() {
 		ImGui::Checkbox("Draw FOV Circle", &Settings::Aimbot::drawFovCircle);
 		ImGui::Unindent();
 	}
-	
+
 	ImGui::Spacing();
 	ImGui::Separator();
 	ImGui::Spacing();
@@ -174,7 +150,7 @@ void aimSettings() {
 		ImGui::SliderFloat("Smoothing Amount", &Settings::Aimbot::smoothingAmount, 0.1f, 10.0f);
 		ImGui::Unindent();
 	}
-	
+
 	ImGui::Checkbox("Randomization", &Settings::Aimbot::randomizationEnabled);
 	if (Settings::Aimbot::randomizationEnabled) {
 		ImGui::Indent();
@@ -183,7 +159,18 @@ void aimSettings() {
 		ImGui::SliderFloat("Speed", &Settings::Aimbot::randomizationSpeed, 0.0f, 5.0f);
 		ImGui::Unindent();
 	}
-	
+
+	ImGui::EndTabItem();
+}
+
+void espSettings() {
+	if (!ImGui::BeginTabItem("Visuals"))
+		return;
+	ImGui::Checkbox("Enabled", &Settings::ESP::enabled);
+	ImGui::Checkbox("Draw Team", &Settings::ESP::drawTeam);
+	ImGui::Checkbox("Tracelines", &Settings::ESP::drawTracelines);
+	ImGui::ColorEdit4("Team Color", (float*)&Settings::ESP::teamColor->Value);
+	ImGui::ColorEdit4("Enemy Color", (float*)&Settings::ESP::enemyColor->Value);
 	ImGui::EndTabItem();
 }
 
@@ -203,9 +190,8 @@ void Menu::render()
 	
 	ImGui::Begin("Menu", &showMenu);
 	if (ImGui::BeginTabBar("Tabs")) {
-		espSettings();
 		aimSettings();
-		testingSettings();
+		espSettings();
 		ImGui::EndTabBar();
 	}
 	
