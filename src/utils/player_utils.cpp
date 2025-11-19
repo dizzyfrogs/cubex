@@ -44,3 +44,35 @@ bool Utils::PlayerUtils::isEnemy(Player* player) {
 	return player->team != localPlayerPtr->team;
 }
 
+// thank you, rft0
+void Utils::PlayerUtils::traceLine(Vec3* from, Vec3* to) {
+	if (!from || !to)
+		return;
+
+	void* pFrom = (void*)from;
+	void* pTo = (void*)to;
+
+	__asm {
+		mov ecx, pFrom
+		mov edx, pTo
+		call fIntersectGeometry
+	}
+}
+
+bool Utils::PlayerUtils::isVisible(Player* target) {
+	if (!target || !localPlayerPtr)
+		return false;
+
+	if (target == localPlayerPtr)
+		return false;
+
+	Vec3 tmp = target->headpos;
+	Vec3 from = localPlayerPtr->headpos;
+	Vec3 to = tmp;  // copy target head position
+
+	traceLine(&from, &to);
+
+	// if to vector was modified, there was an intersection (not visible), otherwise it is visible
+	return to.x == tmp.x && to.y == tmp.y && to.z == tmp.z;
+}
+

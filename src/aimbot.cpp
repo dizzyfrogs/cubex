@@ -44,7 +44,9 @@ Player* Aimbot::getNearestEntityW2S() {
         Vec3 headpos = player->headpos;
         Vec3 headScreenPos = OpenGLWorldToScreen(headpos, viewMatrix, *screenWidthPtr, *screenHeightPtr);
 
-        if (headScreenPos.z < 0 || (Settings::Aimbot::checkInFov && !Utils::PlayerUtils::isInFOVW2S(headScreenPos))) {
+        if (headScreenPos.z < 0 
+            || (Settings::Aimbot::checkInFov && !Utils::PlayerUtils::isInFOVW2S(headScreenPos))
+            || (Settings::Aimbot::checkVisibility && !Utils::PlayerUtils::isVisible(player))) {
             offset += 4;
             entityIndex++;
             continue;

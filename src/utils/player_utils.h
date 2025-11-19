@@ -8,6 +8,8 @@ namespace Utils {
 		bool isValidTarget(Player* target);
 		bool isTeamGameMode(int mode);
 		bool isEnemy(Player* player);
+		void traceLine(Vec3* from, Vec3* to);
+		bool isVisible(Player* target);
 	}
 }
 

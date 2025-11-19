@@ -16,10 +16,11 @@ namespace Settings {
 		extern bool enabled = true;
 		extern bool smoothing = true;
 		extern float smoothingAmount = 1.0f;
+		extern bool checkVisibility = true;
 		extern bool checkInFov = true;
 		extern float fov = 180;
 		extern bool drawFovCircle = true;
-		extern int aimKey = VK_SHIFT;
+		extern int aimKey = VK_XBUTTON1; // mouse4
 		extern bool waitingForKeyBind = false;
 		extern bool randomizationEnabled = false;
 		extern float randomizationIntensityYaw = 0.5f;

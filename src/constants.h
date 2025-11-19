@@ -4,7 +4,7 @@
 
 extern HMODULE hModule;
 extern uintptr_t exeBaseAddress;
-
+extern DWORD fIntersectGeometry;
 extern Player* localPlayerPtr;
 extern uintptr_t entityListBase;
 extern float fov;
@@ -15,7 +15,6 @@ extern int numPlayers;
 extern float* viewMatrix;
 
 void resetPointers();
-
 
 typedef BOOL(__stdcall* _wglSwapBuffers)(HDC hdc);
 extern _wglSwapBuffers originalSwapBuffers;

@@ -154,6 +154,8 @@ void aimSettings() {
 	ImGui::Separator();
 	ImGui::Spacing();
 
+	ImGui::Checkbox("Check Visibility", &Settings::Aimbot::checkVisibility);
+
 	ImGui::Checkbox("Check FOV", &Settings::Aimbot::checkInFov);
 	if (Settings::Aimbot::checkInFov) {
 		ImGui::Indent();
@@ -161,7 +163,7 @@ void aimSettings() {
 		ImGui::Checkbox("Draw FOV Circle", &Settings::Aimbot::drawFovCircle);
 		ImGui::Unindent();
 	}
-
+	
 	ImGui::Spacing();
 	ImGui::Separator();
 	ImGui::Spacing();
