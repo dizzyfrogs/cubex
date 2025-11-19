@@ -188,7 +188,7 @@ void Menu::render()
 	}
 	ImGui::SetNextWindowSize(initWindowSize, ImGuiCond_FirstUseEver);
 	
-	ImGui::Begin("Menu", &showMenu);
+	ImGui::Begin("CubeX Menu", &showMenu);
 	if (ImGui::BeginTabBar("Tabs")) {
 		aimSettings();
 		espSettings();
